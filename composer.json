@@ -1,5 +1,6 @@
 {
     "name": "cyve/resize",
+    "version": "1.0.0",
     "require": {
         "php": ">=8.3",
         "symfony/console": "^7.0"
