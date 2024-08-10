@@ -2,6 +2,7 @@
 
 require 'vendor/autoload.php';
 
+use Cyve\Resize\Resizer;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\InvalidOptionException;
 use Symfony\Component\Console\Input\InputArgument;
@@ -25,6 +26,19 @@ use Symfony\Component\Console\SingleCommandApplication;
         $source = new \SplFileInfo($input->getArgument('src'));
         if (!$source->isReadable()) {
             throw new InvalidOptionException('Invalid source');
+        }
+
+        $resizer = new Resizer();
+        if ($source->isFile()) {
+            $resizer->resize($source, ratio: $ratio);
+            $output->writeln($source->getFilename());
+        } else {
+            $directory = new \FilesystemIterator($source->getPathname());
+            $files = new CallbackFilterIterator($directory, fn (\SplFileInfo $file) => $file->isFile());
+            foreach ($files as $file) {
+                $resizer->resize($file, ratio: $ratio);
+                $output->writeln($file->getFilename());
+            }
         }
 
         return Command::SUCCESS;
